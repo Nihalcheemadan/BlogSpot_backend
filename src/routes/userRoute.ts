@@ -4,25 +4,25 @@ import { Auth, localVariables } from '../middleware/auth'
 
 const router = express.Router();
 
+//  post requests //
+router.route('/signup').post(userController.userSignup);
 router.route('/login').post(userController.verifyUser, userController.userLogin);
+router.route('/authenticate').post(userController.verifyUser,(req,res) => res.end()); //authenticate user
+router.route('/createMail').post(userController.createMail);
 
-router.post('/signup',userController.userSignup);
+// get requests //
+router.route('/generateOtp').get( localVariables , userController.generateOtp);
+router.route('/users/:username').get(userController.getUser);
+router.route('/verifyOtp').get(userController.verifyOtp);
+router.route('/createResetSession').get(userController.createResetSession);
+router.route('/verifySignup').post(userController.verifySignup);
 
-router.route('/update/:uId').put( Auth,userController.updateUser);
+// put requests // 
+router.route('/update').put( Auth,userController.updateUser);
+router.route('/resetPassword').put(userController.verifyUser,userController.resetPassword);
 
-router.delete('/:id',userController.deleteUser);
+// delete requests //
+router.route('/:id').delete(userController.deleteUser);
 
-router.get('/users/:userId',userController.getUser);
-
-router.route('/generateOtp').get(userController.verifyUser, localVariables , userController.generateOtp);
-
-router.route('/verifyOtp').get(userController.verifyOtp)
-
-router.route('/createResetSession').get(userController.createResetSession)
-
-router.route('/resetPassword').put(userController.resetPassword);
-
-router.route('/createMail').post(userController.createMail)
-
-
-export default router; 
+ 
+export default router;

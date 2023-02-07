@@ -8,5 +8,5 @@ mongoose.connect(env.MONGO_CONNECTION).then(()=>{
     console.log('mongodb connected');
     app.listen(port, ()=>{
         console.log('server running at port ' + port);
-    })
-}).catch(console.error)
+    }) 
+}).catch(console.error) 

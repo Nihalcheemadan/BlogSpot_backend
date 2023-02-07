@@ -3,10 +3,14 @@ import express, { NextFunction, Request, Response }  from "express";
 import userRouter from './routes/userRoute'
 import adminRouter from './routes/adminRoute'
 import createHttpError , {isHttpError} from 'http-errors';
+import morgan from 'morgan'
 
 const app = express();
 
+
+
 app.use(express.json());
+app.use(morgan('dev'));
 
 app.use("/api/user",userRouter)
 app.use("/api/admin",adminRouter)
@@ -24,7 +28,7 @@ app.use((error:unknown,req:Request,res:Response,next:NextFunction)=>{
         statusCode = error.status;
         errorMessage = error.message;
     }
-    res.sendStatus(statusCode).json({error : errorMessage})
+    res.status(statusCode).json({error : errorMessage})
 })
 
-export default app;
+export default app; 

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import env from '../utils/validateEnv'
 
 
-
+ 
 
 export const Auth = async (req :Request ,res :Response,next :NextFunction) => {
     try {
@@ -14,9 +14,7 @@ export const Auth = async (req :Request ,res :Response,next :NextFunction) => {
 
         //retrieve the user details for the logged in user
         const decodedToken = await jwt.verify(token,env.JWT_SECRET) ;
-
         res.locals.decodedToken = decodedToken;         
-
         next()
     } catch (error) { 
         next(error) 
