@@ -1,5 +1,5 @@
 import {  NextFunction, Request, RequestHandler, Response } from "express";
-import createHttpError from "http-errors";
+import createHttpError,{InternalServerError} from "http-errors";
 import mongoose, { InferSchemaType, Model } from "mongoose";
 import userModel from "../models/userModel";
 import bcrypt from 'bcrypt'
@@ -26,12 +26,11 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
         port: 465,
         secure: true,
         service: 'Gmail',
-      
         auth: { 
-          user: env.NODE_EMAIL,
-          pass: env.NODE_PASSWORD,
+            user: env.NODE_EMAIL,
+            pass: env.NODE_PASSWORD,
         }
-      });
+        });
 
       const message = {
         from: env.NODE_EMAIL,
@@ -49,9 +48,9 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
             info: info.messageId,
             preview: nodemailer.getTestMessageUrl(info)
         })
-        
     }).catch((error)=>{ res.send(500).json({error})});
 }
+
 
 export const verifyUser : RequestHandler = async (req,res,next) => {
     try {
@@ -60,9 +59,10 @@ export const verifyUser : RequestHandler = async (req,res,next) => {
         if(!exist) return next(createHttpError(404,"Cannot find user"))
         next();
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }
+
 
 export const verifySignup= async (req:Request,res:Response,next:NextFunction) => {
     const { username , email } = req.body;
@@ -74,16 +74,14 @@ export const verifySignup= async (req:Request,res:Response,next:NextFunction) =>
         if(!userExist && !emailExist) return res.status(200).json({msg:"success"})
         return res.status(401) 
     } catch (error) {
-        next(error);
+        next(InternalServerError);
     } 
-    
 }
 
 
 export const userLogin : RequestHandler = async (req,res,next)=>{
     const username = req.body.username;
     const passwordRaw = req.body.password
-
     try {
         const user = await userModel.findOne({username})        
         if(!user) return next(createHttpError(404,"User not found"));
@@ -95,20 +93,21 @@ export const userLogin : RequestHandler = async (req,res,next)=>{
         },env.JWT_SECRET,{expiresIn : "24h"})
         return res.status(201).send({username:user.username,token,msg:"Login successfull.."});
     } catch (error) { 
-        next(error)   
+        next(InternalServerError)   
     }
 }
+
 interface userSignupBody{
     username : string,
     email : string,
     password : string,
-} 
+}
+
 export const userSignup : RequestHandler<unknown,unknown,userSignupBody,unknown> = async (req,res,next) => {
     const username = req.body.username;
     const email = req.body.email;
     const passwordRaw = req.body.password;
     try {
-        console.log(req.body);
         if(!email || !username ||  !passwordRaw) return next(createHttpError(400,"Insufficient data"));
         const existingEmail = await userModel.findOne({email }).exec()
         const existingUser = await userModel.findOne({username}).exec()
@@ -119,10 +118,10 @@ export const userSignup : RequestHandler<unknown,unknown,userSignupBody,unknown>
             username,
             email,
             password:hashedPassword,
-        })        
-        return res.status(201).json({newUser,msg:"user register successfully"}); 
+        })
+        return res.status(201).json({msg:"user register successfully"}); 
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }
 
@@ -138,9 +137,10 @@ export const getUser:RequestHandler<getUser,unknown,unknown,unknown> = async (re
         const {password , ...rest} = Object.assign({},user.toJSON());
         res.status(200).json({rest})
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }
+
 interface updateUserData {
     username ?: string,
     email ?: string,
@@ -163,13 +163,12 @@ export const updateUser : RequestHandler<unknown,unknown,updateUserData,unknown>
             email:newEmail,
             phone:newPhone,
             place:newPlace
-        }).exec()
-
+        }).exec();
         if(!user) return next(createHttpError(404,"User not found "))
         res.status(200).json({msg:"Record updated successfully...."}); 
-    }
+        }
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }
 
@@ -178,14 +177,14 @@ interface deleteUserData{
 }
 
 export const deleteUser : RequestHandler<deleteUserData,unknown,unknown,unknown> = async (req,res,next) => {
-    const id = req.params.id
+    const id = req.params.id;
     try {
-        if(!mongoose.isValidObjectId(id)) return next(createHttpError(400,"Invalid user id"))
+        if(!mongoose.isValidObjectId(id)) return next(createHttpError(400,"Invalid user id"));
         const user : any = await userModel.findById(id).exec();
         user.remove()
         res.status(200);
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }
 
@@ -242,6 +241,6 @@ export const resetPassword :RequestHandler<unknown,unknown,resetPasswordData,unk
             return next(createHttpError(404,"Username not found"))
         })
     } catch (error) {
-        next(error)
+        next(InternalServerError)
     }
 }

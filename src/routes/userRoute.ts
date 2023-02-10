@@ -24,5 +24,5 @@ router.route('/resetPassword').put(userController.verifyUser,userController.rese
 // delete requests //
 router.route('/:id').delete(userController.deleteUser);
 
- 
+
 export default router;

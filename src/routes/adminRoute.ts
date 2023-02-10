@@ -3,6 +3,7 @@ import * as adminController from '../controller/adminController'
 
 const router = express.Router();
 
-router.get('/',adminController.adminDetails);
+router.route('/createCategory').post(adminController.createCategory);
+
 
 export default router;

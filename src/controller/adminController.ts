@@ -1,12 +1,27 @@
 import { RequestHandler } from "express";
+import createHttpError,{InternalServerError} from "http-errors";
+import categoryModel from "../models/categoryModel";
 import userModel from "../models/userModel";
+import cloudinary  from '../utils/cloudinary'
 
-export const adminDetails : RequestHandler = async (req,res,next)=>{
+
+
+
+export const createCategory :RequestHandler = async (req,res,next) => {
+    const { imageUrl, category } = req.body;
     try {
-        // throw Error('Error occured!')
-        const user = await userModel.find().exec();
-        res.sendStatus(200).json(user);
+        console.log(req.body);
+        if(!imageUrl || !category) return next(createHttpError(404,'Insufficient data'));
+        const categoryExist = await categoryModel.findOne({category})
+        if(categoryExist) return next(createHttpError(404,'Category Already exist'));
+        const cat = await categoryModel.create({
+            imageUrl, 
+            category 
+        })
+        res.status(201).json({msg:"Category created successfully"})
     } catch (error) {
-        next(error)
-    }
-}
+        next(InternalServerError);  
+    } 
+} 
+
+

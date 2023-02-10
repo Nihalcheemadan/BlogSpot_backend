@@ -5,5 +5,8 @@ export default cleanEnv(process.env,{
     PORT: port(),
     JWT_SECRET: str(),
     NODE_EMAIL:str(),
-    NODE_PASSWORD : str()
+    NODE_PASSWORD : str(),
+    CLOUDINARY_NAME : str(),
+    CLOUDINARY_API_KEY : str(),
+    CLOUDINARY_SECRET_KEY : str()
 }) 
