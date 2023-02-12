@@ -3,7 +3,29 @@ import createHttpError,{InternalServerError} from "http-errors";
 import blogModel from "../models/blogModel";
 import categoryModel from "../models/categoryModel";
 import userModel from "../models/userModel";
+import bcrypt from 'bcrypt'
+import jwt  from 'jsonwebtoken'
+import env from '../utils/validateEnv'
 
+
+//admin login
+
+export const adminLogin : RequestHandler = async (req,res,next)=>{    
+    const username = req.body.username;
+    const passwordRaw = req.body.password
+    try {
+        const admin = await userModel.findOne({ username: username, isAdmin: true })        
+        if(!admin) return next(createHttpError(404,"Enter valid username"));
+        const passwordValidate = await bcrypt.compare(passwordRaw,admin.password)
+        if(!passwordValidate) return next(createHttpError(404,"Password does not match"));
+        const token = jwt.sign({ 
+            adminId:admin._id,  
+        },env.JWT_SECRET,{expiresIn : "24h"})
+        return res.status(201).send({token,msg:"Login successfull.."});
+    } catch (error) { 
+        next(InternalServerError)   
+    }
+}
 
 
 //get users list
@@ -43,7 +65,7 @@ export const createCategory :RequestHandler = async (req,res,next) => {
 
 export const getCategory : RequestHandler = async (req,res,next) => {
     try {
-        const category = await categoryModel.distinct('category');
+        const category = await categoryModel.find({});
         if(!category) return next(createHttpError(501,"Blog data can't get right now"));
         res.status(201).json(category) 
     } catch (error) {
@@ -52,7 +74,7 @@ export const getCategory : RequestHandler = async (req,res,next) => {
 } 
 
 
-//get all the blogs
+//get all the blogs 
 export const getBlog : RequestHandler = async (req,res,next) => {
     try {
         const blog = await blogModel.find();
