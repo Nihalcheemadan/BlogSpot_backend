@@ -32,7 +32,7 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
         }
         });
 
-      const message = {
+    const message = {
         from: env.NODE_EMAIL,
         to: userEmail, 
         subject: "Email verification", // Subject line
@@ -40,7 +40,7 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
         "<h3>OTP for your email verification is </h3>" +
         "<h2 style='font-weight:bold;'>" + OTP +"</h2>"// html body
       }
-  
+
     // send mail with defined transport object
     await transporter.sendMail(message).then((info)=>{
         res.status(201).json({
@@ -50,6 +50,7 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
         })
     }).catch((error)=>{ res.send(500).json({error})});
 }
+
 
 
 export const verifyUser : RequestHandler = async (req,res,next) => {
@@ -78,12 +79,54 @@ export const verifySignup= async (req:Request,res:Response,next:NextFunction) =>
     } 
 }
 
+//block a user 
+
+export const blockUser : RequestHandler = async (req,res,next) => {
+    const id = req.params.id;
+    try {
+        const users = await userModel.findByIdAndUpdate(
+            { _id: id },
+            {
+                $set: {
+                    status: "blocked",
+                },
+            }
+            )
+        if(!users) return next(createHttpError(501,"user not found"));
+        res.status(201).json({msg:"user blocked"});
+    } catch (error) {
+        next(InternalServerError);
+    }
+}
+
+//unblock a user 
+
+export const unblockUser : RequestHandler = async (req,res,next) => {
+    const id = req.params.id;
+    try {
+        const users = await userModel.findByIdAndUpdate(
+            { _id: id },
+            {
+                $set: {
+                    status: "unblocked",
+                },
+            }
+        )
+        if(!users) return next(createHttpError(501,"user not found"));
+        res.status(201).json({msg:"user blocked"});
+    } catch (error) {
+        next(InternalServerError);
+    }
+}
+
+
+
 
 export const userLogin : RequestHandler = async (req,res,next)=>{
     const username = req.body.username;
     const passwordRaw = req.body.password
     try {
-        const user = await userModel.findOne({username})        
+        const user = await userModel.findOne({ username })        
         if(!user) return next(createHttpError(404,"User not found"));
         const passwordValidate = await bcrypt.compare(passwordRaw,user.password)
         if(!passwordValidate) return next(createHttpError(404,"Password does not match"));
@@ -190,6 +233,7 @@ export const deleteUser : RequestHandler<deleteUserData,unknown,unknown,unknown>
 
 export const generateOtp :RequestHandler =  (req,res,next) => {
     req.app.locals.OTP = otpGenerator.generate(6,{ lowerCaseAlphabets:false,upperCaseAlphabets:false,specialChars:false})
+    console.log(req.app.locals.OTP );
     res.status(201).json({code : req.app.locals.OTP})
 } 
 

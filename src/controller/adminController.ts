@@ -10,13 +10,13 @@ import userModel from "../models/userModel";
 
 export const getUsers : RequestHandler = async (req,res,next) => {
     try {
-        const users = await userModel.find();
+        const users = await userModel.find({});
         if(!users) return next(createHttpError(501,"Blog data can't get right now"));
         res.status(201).json(users);
     } catch (error) {
         next(InternalServerError);
     }
-}
+} 
 
 
 //create a new category 
@@ -43,15 +43,13 @@ export const createCategory :RequestHandler = async (req,res,next) => {
 
 export const getCategory : RequestHandler = async (req,res,next) => {
     try {
-        const category = await categoryModel.find();
+        const category = await categoryModel.distinct('category');
         if(!category) return next(createHttpError(501,"Blog data can't get right now"));
-        res.status(201).json(category)
+        res.status(201).json(category) 
     } catch (error) {
         next(InternalServerError)
     }
-}
-
-
+} 
 
 
 //get all the blogs
@@ -63,25 +61,24 @@ export const getBlog : RequestHandler = async (req,res,next) => {
     } catch (error) {
         next(InternalServerError)
     }
-
 }
 
 
 //create a new blog 
 
 export const createBlog : RequestHandler = async (req,res,next) => {
-    const { title,content,imageUrl } = req.body
+    const { title,content,imageUrl,category } = req.body
     try {
         console.log(req.body);
         const newBlog = new blogModel({
             title,
             content,
+            category,
             imageUrl
-        })
-    } catch (error) {
+        }).save();
+    } catch (error) { 
         next(InternalServerError)
-    }
-
+    }  
 }
 
 
