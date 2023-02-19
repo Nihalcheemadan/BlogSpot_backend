@@ -6,11 +6,11 @@ const categorySchema = new Schema({
         required:true,
         unique:true
     },
-    imageUrl:{
-        type:String,
+    imageUrl:{ 
+        type:String, 
         required:true
-    }
-},{timestamps:true});
+    } 
+},{timestamps:true}); 
 
 
 type Category = InferSchemaType<typeof categorySchema>;

@@ -126,9 +126,11 @@ export const userLogin : RequestHandler = async (req,res,next)=>{
     const username = req.body.username;
     const passwordRaw = req.body.password
     try {
-        const user = await userModel.findOne({ username })        
+        const userBlocked = await userModel.findOne({ username , status:'blocked'});
+        if(userBlocked) return next(createHttpError(403,"User blocked"));
+        const user = await userModel.findOne({ username , status:'unblocked'});        
         if(!user) return next(createHttpError(404,"User not found"));
-        const passwordValidate = await bcrypt.compare(passwordRaw,user.password)
+        const passwordValidate = await bcrypt.compare(passwordRaw,user.password);
         if(!passwordValidate) return next(createHttpError(404,"Password does not match"));
         const token = jwt.sign({ 
             userId:user._id,  
@@ -139,6 +141,9 @@ export const userLogin : RequestHandler = async (req,res,next)=>{
         next(InternalServerError)   
     }
 }
+
+
+
 
 interface userSignupBody{
     username : string,

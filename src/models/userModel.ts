@@ -1,4 +1,16 @@
-import mongoose, { InferSchemaType, model, Schema } from "mongoose";
+import mongoose, { Document, InferSchemaType, model, Schema } from "mongoose";
+
+interface IUser extends Document   {
+  username: string;
+  email: string;
+  password: string;
+  status: string;
+  isAdmin: boolean;
+  Followers: string[];
+  Following: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const userSchema = new Schema(
   {
@@ -12,7 +24,6 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-
     password: {
       type: String,
       required: true,
@@ -25,45 +36,15 @@ const userSchema = new Schema(
       type: String,
       default: false,
     },
-    postCount: {
-        type: Number,
-        default: 0,
+    Followers: {
+      type: Array,
     },
-    isFollowing: {
-        type: Boolean,
-        default: false,
-    },
-    isUnfollowing: {
-        type: Boolean,
-        default: false,
-    },
-    viewedBy: {
-        type: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
-    },
-    followers: {
-        type: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
-    },
-    following: {
-        type: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
-    },
-    },
+    Following: {
+      type: Array,
+    }},
     { timestamps: true }
 );
 
 type User = InferSchemaType<typeof userSchema>;
 export default model<User>("User", userSchema);
+export { IUser };

@@ -1,6 +1,8 @@
 import express  from 'express'
 import * as userController from '../controller/userController'
 import { Auth, localVariables } from '../middleware/auth'
+import * as chatController from '../controller/chatController'
+import * as postController from '../controller/postController'
 
 const router = express.Router();
 
@@ -9,6 +11,7 @@ router.route('/signup').post(userController.userSignup);
 router.route('/login').post(userController.verifyUser, userController.userLogin);
 router.route('/authenticate').post(userController.verifyUser,(req,res) => res.end()); //authenticate user
 router.route('/createMail').post(userController.createMail);
+router.route('/sendMessage').post(Auth, chatController.sendMessage);
 
 // get requests //
 router.route('/generateOtp').get( localVariables , userController.generateOtp);
@@ -16,6 +19,7 @@ router.route('/users/:username').get(userController.getUser);
 router.route('/verifyOtp').get(userController.verifyOtp);
 router.route('/createResetSession').get(userController.createResetSession);
 router.route('/verifySignup').post(userController.verifySignup);
+router.route('/getMessages').get(Auth, chatController.getMessage)
 
 // put requests // 
 router.route('/update').put( Auth,userController.updateUser);
@@ -23,6 +27,11 @@ router.route('/resetPassword').put(userController.verifyUser,userController.rese
 
 // delete requests //
 router.route('/:id').delete(userController.deleteUser);
+
+
+router.route('/following/:id').put(Auth ,postController.followingUsers); 
+router.route("/flw/:id").get(  Auth,postController.followingPost); 
+// router.route("/all/user/:id").get( postController.getUserToFollow); 
 
 
 export default router;

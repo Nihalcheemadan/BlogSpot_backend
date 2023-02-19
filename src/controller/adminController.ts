@@ -28,6 +28,40 @@ export const adminLogin : RequestHandler = async (req,res,next)=>{
 }
 
 
+
+export const userBlock : RequestHandler = async (req,res,next)=>{
+    const id = req.params.id;
+    await userModel
+      .findByIdAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            status: "blocked",
+          },
+        }
+      )
+      .then(() => {
+        res.status(200).json({msg:'user blocked successfully'})
+      });
+}
+
+export const userUnblock : RequestHandler = async (req,res,next)=>{
+    const id = req.params.id;
+    await userModel
+      .findByIdAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            status: "unblocked",
+          },
+        }
+      )
+      .then(() => {
+        res.status(200).json({msg:'user blocked successfully'})
+      });
+}
+
+
 //get users list
 
 export const getUsers : RequestHandler = async (req,res,next) => {
@@ -39,7 +73,7 @@ export const getUsers : RequestHandler = async (req,res,next) => {
         next(InternalServerError);
     }
 } 
-
+ 
 
 //create a new category 
 

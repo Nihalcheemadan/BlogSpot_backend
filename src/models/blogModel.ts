@@ -1,77 +1,49 @@
-import mongoose,{ InferSchemaType, model, Schema } from "mongoose";
+import mongoose, { InferSchemaType, model, Schema } from "mongoose";
 
-
-const blogSchema = new Schema({
-    title:{
-        type:String,
-        required:true
+const blogSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
     },
-    content:{
-        type:String,
-        required:true
+    content: {
+      type: String,
+      required: true,
     },
-    category:{
-        type: String,
-        
-        required:true
+    category: {
+      type: String,
+      required: true,
     },
-    isLiked:{
-        type:Boolean,
-        default:false,
+    like: {
+      type: Array,
     },
-    isDisLiked:{
-        type:Boolean,
-        default:false,
+    dislike: {
+      type: Array,
     },
-    // user:{
-    //     type:mongoose.Schema.Types.ObjectId,
-    //     ref:'User',
-    //     required:[true,"Please Author is required"]
-    // },
-    likes:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User',
+    comments: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
         },
+        username: {
+          type: String,
+          required: true,
+        },
+        profile: {
+          type: String,
+        },
+        comment: {
+          type: String,
+          required: true,
+        },
+      },
     ],
-    disLikes:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User',
-        },
-    ], 
-    imageUrl:{
-        type:String,
-    } 
-},{
-    toJSON:{
-        virtuals:true
-    },
-    toObject:{
-        virtuals:true,
-    }, 
-    timestamps:true
-});
-
-
-blogSchema.virtual("Likes", {
-    ref:"Likes",
-    foreignField:"postId",
-    localField:"_id"
-}) 
-
-blogSchema.virtual("Dislike", {
-    ref:"Dislike",
-    foreignField:"postId",
-    localField:"_id"
-})
-
-blogSchema.virtual("Comment", {
-    ref:"Comment",
-    foreignField:"postId",
-    localField:"_id"
-})
-
+  },
+  {
+    timestamps: true,
+  }
+);
 
 type Blog = InferSchemaType<typeof blogSchema>;
-export default model<Blog>("Blog",blogSchema);
+export default model<Blog>("Blog", blogSchema);
