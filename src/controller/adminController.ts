@@ -111,7 +111,8 @@ export const getCategory : RequestHandler = async (req,res,next) => {
 //get all the blogs 
 export const getBlog : RequestHandler = async (req,res,next) => {
     try {
-        const blog = await blogModel.find();
+        const blog = await blogModel.find().populate('author');
+        console.log(blog);
         if(!blog) return next(createHttpError(501,"Blog data can't get right now"));
         res.status(201).json(blog)
     } catch (error) {

@@ -29,9 +29,9 @@ router.route('/resetPassword').put(userController.verifyUser,userController.rese
 router.route('/:id').delete(userController.deleteUser);
 
 
-router.route('/following/:id').put(Auth ,postController.followingUsers); 
-router.route("/flw/:id").get(  Auth,postController.followingPost); 
-// router.route("/all/user/:id").get( postController.getUserToFollow); 
-
+router.put("/following/:id" , Auth ,userController.userFollowing  )
+router.get("/flw/:id" , Auth , userController.followingPost);
+router.get("/post/user/details/:id" , userController.getUserDetailsforPost);
+router.get("/all/user/:id" , userController.followUser)
 
 export default router;

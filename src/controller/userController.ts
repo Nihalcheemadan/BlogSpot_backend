@@ -7,6 +7,7 @@ import jwt  from 'jsonwebtoken'
 import env from '../utils/validateEnv'
 import otpGenerator from 'otp-generator'
 import nodemailer from 'nodemailer'
+import blogModel from "../models/blogModel";
 
 
 
@@ -293,3 +294,85 @@ export const resetPassword :RequestHandler<unknown,unknown,resetPasswordData,unk
         next(InternalServerError)
     }
 }
+
+
+//Following
+
+export const userFollowing:RequestHandler = (async(req , res)=>{
+    if(req.params.id !== req.body.user){
+        const user:any = await userModel.findById(req.params.id);
+        const otheruser:any = await userModel.findById(req.body.user);
+        if(!user.Followers.includes(req.body.user)){
+            await user.updateOne({$push:{Followers:req.body.user}});
+            await otheruser.updateOne({$push:{Following:req.params.id}});
+            return res.status(200).json("User has followed");
+        }else{
+            await user.updateOne({$pull:{Followers:req.body.user}});
+            await otheruser.updateOne({$pull:{Following:req.params.id}});
+            return res.status(200).json("User has Unfollowed");
+        }
+    }else{
+        return res.status(400).json("You can't follow yourself")
+    }
+})
+
+//Fetch post from following
+export const followingPost:RequestHandler = (async(req ,res)=>{
+    try {
+        const user:any = await userModel.findById(req.params.id);
+        const followersPost = await Promise.all(
+            user.Following.map((item:any)=>{
+                return blogModel.find({user:item})
+            })
+        )
+        const userPost = await blogModel.find({user:user._id});
+
+        res.status(200).json(userPost.concat(...followersPost));
+    } catch (error) {
+        return res.status(500).json("Internal server error")
+    }
+})
+
+
+
+//get user details for post
+export const getUserDetailsforPost:RequestHandler = (async(req , res)=>{
+    try {
+        const user:any = await userModel.findById(req.params.id);
+        if(!user){
+            return res.status(400).json("User not found")
+        }
+        const {email , password , phonenumber , ...others}=user._doc;
+        res.status(200).json(others);
+    } catch (error) {
+        return res.status(500).json("Internal server error")
+    }
+})
+
+//get user to follow
+
+export const followUser:RequestHandler = (async(req , res)=>{
+    try {
+        const allUser:any = await userModel.find();
+        const user:any = await userModel.findById(req.params.id);
+        const followinguser = await Promise.all(
+            user.Following.map((item:any)=>{
+                return item;
+            })
+        )
+        const UserToFollow = allUser.filter((val:any)=>{
+            return !followinguser.find((item)=>{
+                return val._id.toString()===item;
+            })
+        })
+        const filteruser = await Promise.all(      
+            UserToFollow.map((item:any)=>{
+                const {email , phonenumber , Followers , Following , password , ...others } = item._doc;
+                return others;
+            })
+        )
+        res.status(200).json(filteruser)
+    } catch (error) {
+        return res.status(500).json("Internal server error")
+    }
+})

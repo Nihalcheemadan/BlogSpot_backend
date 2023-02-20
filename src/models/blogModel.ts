@@ -14,29 +14,37 @@ const blogSchema = new Schema(
       type: String,
       required: true,
     },
-    like: {
-      type: Array,
+    imageUrl:{
+      type:String,
+      required:true
     },
-    dislike: {
-      type: Array,
+    author:{
+      type : mongoose.Schema.Types.ObjectId,
+      ref:'User',
+      required:true
+    },
+    like: {
+      type: [String],
     },
     comments: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
+          ref:'User',
           required: true,
         },
         username: {
           type: String,
           required: true,
         },
-        profile: {
-          type: String,
-        },
         comment: {
           type: String,
           required: true,
         },
+        createdAt: {
+          type: Date,
+          default: Date.now
+        }
       },
     ],
   },
