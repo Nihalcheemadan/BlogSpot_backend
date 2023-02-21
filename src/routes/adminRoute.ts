@@ -15,7 +15,7 @@ router.route('/createCategory').post(adminController.createCategory);
 
 router.route('/getCategory').get(adminController.getCategory);
 
-router.route('/getBlog').get(adminController.getBlog);
+router.get('/getBlog',adminController.getBlog);
 
 router.route('/createBlog').post(adminController.createBlog);
 

@@ -79,6 +79,50 @@ export const likeBlog: RequestHandler = async (req, res) => {
   }
 }; 
 
+//save
+export const saveBlog: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { userId } = res.locals.decodedToken
+    const post:any = await blogModel.findById({_id:id});
+    console.log(userId,id);
+    if (!post.saved.includes(userId)) {
+      await post.updateOne({ $push: { saved: userId } });
+      return res.status(201).json({post,msg:"Post saved successfully"})
+    } else {
+      await post.updateOne({ $pull: { saved: userId } });
+      return res.status(200).json({post,msg:"Post unsaved "});
+    }
+  } catch (error) {
+    return res.status(500).json("Internal server error "); 
+  }
+}; 
+
+
+// getSingleBlog
+
+export const getSingleBlog : RequestHandler = async (req,res,next) => {
+  try {
+
+      const { userId } = res.locals.decodedToken  
+      console.log(userId,req.body);
+      
+      const blog = await blogModel.findById({_id:req.body.blogId}).populate('like').populate('saved');
+      console.log(blog);
+      if(!blog) return next(createHttpError(501,"Blog data can't get right now"));
+      let liked = false; 
+      let saved = false; 
+      if (blog.like.includes(userId)) {
+        liked = true; // update value to true if condition is met
+      }
+      if (blog.saved.includes(userId)) {
+        saved = true; // update value to true if condition is met
+      }
+      res.status(201).json({blog,liked,saved})
+  } catch (error) {
+      next(InternalServerError)
+  }
+}
 
 
 //Comment

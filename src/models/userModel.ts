@@ -1,6 +1,6 @@
 import mongoose, { Document, InferSchemaType, model, Schema } from "mongoose";
 
-interface IUser extends Document   {
+interface IUser extends Document {
   username: string;
   email: string;
   password: string;
@@ -28,9 +28,10 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    profileImg:{
-      type:String,
-      default:'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'
+    profileImg: {
+      type: String,
+      default:
+        "https://img.freepik.com/premium-vector/men-icon-trendy-avatar-character-cheerful-happy-people-flat-vector-illustration-round-frame-male-portraits-group-team-adorable-guys-isolated-white-background_275421-286.jpg?w=740",
     },
     status: {
       type: String,
@@ -40,13 +41,20 @@ const userSchema = new Schema(
       type: String,
       default: false,
     },
-    Followers: {
-      type: Array,
-    },
-    Following: {
-      type: Array,
-    }},
-    { timestamps: true }
+    Followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+    Following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+  },
+  { timestamps: true }
 );
 
 type User = InferSchemaType<typeof userSchema>;

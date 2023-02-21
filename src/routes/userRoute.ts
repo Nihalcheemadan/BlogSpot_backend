@@ -29,7 +29,7 @@ router.route('/resetPassword').put(userController.verifyUser,userController.rese
 router.route('/:id').delete(userController.deleteUser);
 
 
-router.put("/following/:id" , Auth ,userController.userFollowing  )
+router.route("/following/:id").put( Auth ,userController.userFollowing  )
 router.get("/flw/:id" , Auth , userController.followingPost);
 router.get("/post/user/details/:id" , userController.getUserDetailsforPost);
 router.get("/all/user/:id" , userController.followUser)

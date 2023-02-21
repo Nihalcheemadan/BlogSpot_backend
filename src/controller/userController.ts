@@ -40,7 +40,7 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
         html: "<h2> Hello "+ username +"</h2>"+
         "<h3>OTP for your email verification is </h3>" +
         "<h2 style='font-weight:bold;'>" + OTP +"</h2>"// html body
-      }
+    }
 
     // send mail with defined transport object
     await transporter.sendMail(message).then((info)=>{
@@ -299,16 +299,21 @@ export const resetPassword :RequestHandler<unknown,unknown,resetPasswordData,unk
 //Following
 
 export const userFollowing:RequestHandler = (async(req , res)=>{
-    if(req.params.id !== req.body.user){
-        const user:any = await userModel.findById(req.params.id);
-        const otheruser:any = await userModel.findById(req.body.user);
-        if(!user.Followers.includes(req.body.user)){
-            await user.updateOne({$push:{Followers:req.body.user}});
-            await otheruser.updateOne({$push:{Following:req.params.id}});
+
+    console.log(req.params.id,'params modified');
+    const { userId } = res.locals.decodedToken  
+    const id = req.params.id;
+
+    if(id !== userId){
+        const user:any = await userModel.findById(userId);
+        const otheruser:any = await userModel.findById(id);
+        if(!user.Following.includes(id)){
+            await user.updateOne({$push:{Following:id}});
+            await otheruser.updateOne({$push:{Followers:userId}});
             return res.status(200).json("User has followed");
         }else{
-            await user.updateOne({$pull:{Followers:req.body.user}});
-            await otheruser.updateOne({$pull:{Following:req.params.id}});
+            await user.updateOne({$pull:{Following:id}});
+            await otheruser.updateOne({$pull:{Followers:userId}});
             return res.status(200).json("User has Unfollowed");
         }
     }else{
@@ -324,7 +329,7 @@ export const followingPost:RequestHandler = (async(req ,res)=>{
             user.Following.map((item:any)=>{
                 return blogModel.find({user:item})
             })
-        )
+        ) 
         const userPost = await blogModel.find({user:user._id});
 
         res.status(200).json(userPost.concat(...followersPost));

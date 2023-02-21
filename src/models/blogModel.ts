@@ -26,6 +26,9 @@ const blogSchema = new Schema(
     like: {
       type: [String],
     },
+    saved: {
+      type: [String],
+    },
     comments: [
       {
         user: {
