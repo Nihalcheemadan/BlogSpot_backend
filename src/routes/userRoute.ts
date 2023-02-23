@@ -11,6 +11,7 @@ router.route('/signup').post(userController.userSignup);
 router.route('/login').post(userController.verifyUser, userController.userLogin);
 router.route('/authenticate').post(userController.verifyUser,(req,res) => res.end()); //authenticate user
 router.route('/createMail').post(userController.createMail);
+
 router.route('/sendMessage').post(Auth, chatController.sendMessage);
 
 // get requests //
@@ -19,6 +20,7 @@ router.route('/users/:username').get(userController.getUser);
 router.route('/verifyOtp').get(userController.verifyOtp);
 router.route('/createResetSession').get(userController.createResetSession);
 router.route('/verifySignup').post(userController.verifySignup);
+
 router.route('/getMessages').get(Auth, chatController.getMessage)
 
 // put requests // 
@@ -28,8 +30,8 @@ router.route('/resetPassword').put(userController.verifyUser,userController.rese
 // delete requests //
 router.route('/:id').delete(userController.deleteUser);
 
-
 router.route("/following/:id").put( Auth ,userController.userFollowing  )
+
 router.get("/flw/:id" , Auth , userController.followingPost);
 router.get("/post/user/details/:id" , userController.getUserDetailsforPost);
 router.get("/all/user/:id" , userController.followUser)

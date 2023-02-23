@@ -4,6 +4,7 @@ interface IUser extends Document {
   username: string;
   email: string;
   password: string;
+  profileImg: string,
   status: string;
   isAdmin: boolean;
   Followers: string[];
@@ -17,9 +18,9 @@ const userSchema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
-    },
-    email: {
+      unique: true, 
+    },  
+    email: { 
       type: String,
       required: true,
       unique: true,
@@ -27,9 +28,9 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-    },
+    }, 
     profileImg: {
-      type: String,
+      type: String, 
       default:
         "https://img.freepik.com/premium-vector/men-icon-trendy-avatar-character-cheerful-happy-people-flat-vector-illustration-round-frame-male-portraits-group-team-adorable-guys-isolated-white-background_275421-286.jpg?w=740",
     },

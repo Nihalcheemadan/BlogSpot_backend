@@ -42,31 +42,31 @@ app.use((error:unknown,req:Request,res:Response,next:NextFunction)=>{
 })
 
 
-// const io = new SocketIOServer(server, {
-//     cors: {
-//         origin:'http://localhost:3000/',
-//         credentials: true
-//     }
-// });
+const io = new SocketIOServer(server, {
+    cors: {
+        origin:'http://localhost:3000/',
+        credentials: true
+    } 
+});
 
-// const onlineUsers = new Map();
-// io.on("connection", (socket) => { 
-//     console.log('Client connected:', socket.id);
-//     // const chatSocket = socket;
-//     socket.on("addUser", (id) => {
-//         onlineUsers.set(id, socket.id);
-//     })
-//     socket.on("send-msg", (data) => {
-//         const sendUserSocket = onlineUsers.get(data.to)
-//         if (sendUserSocket) {
-//             socket.to(sendUserSocket).emit("msg-receive", data.message)
-//         }
-//     })
-//     // Handle disconnections
-//     socket.on('disconnect', () => {
-//         console.log('Client disconnected:', socket.id);
-//     });
-// })
+const onlineUsers = new Map();
+io.on("connection", (socket) => { 
+    console.log('Client connected:', socket.id);
+    // const chatSocket = socket;
+    socket.on("addUser", (id) => {
+        onlineUsers.set(id, socket.id);
+    })
+    socket.on("send-msg", (data) => {
+        const sendUserSocket = onlineUsers.get(data.to)
+        if (sendUserSocket) {
+            socket.to(sendUserSocket).emit("msg-receive", data.message)
+        }
+    })
+    // Handle disconnections
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+})
 
 const port = env.PORT
 

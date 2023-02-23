@@ -12,13 +12,13 @@ router.route('/userBlock/:id').get(adminController.userBlock);
 router.route('/userUnblock/:id').get(adminController.userUnblock);
 
 router.route('/createCategory').post(adminController.createCategory);
-
 router.route('/getCategory').get(adminController.getCategory);
+router.route('/editCategory').put(adminController.editCategory);
+router.route('/deleteCategory').delete(adminController.deleteCategory)
+
 
 router.get('/getBlog',adminController.getBlog);
-
 router.route('/createBlog').post(adminController.createBlog);
-
 router.route('/getUsers').get(adminController.getUsers);
 
 

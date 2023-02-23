@@ -194,41 +194,21 @@ export const deleteBlog: RequestHandler = async (req, res) => {
 /// Get a Following user
 export const getFollowing: RequestHandler = async (req, res) => {
   try {
-    const user:any = await blogModel.findById(req.params.id);
-    const followinguser:any = await Promise.all(
-      user.Following.map((item:any) => {
-        return userModel.findById(item);
-      })
-    );
-    const followingList:any = [];
-    followinguser.map((person:any) => {
-      const { email, password, phonenumber, Following, Followers, ...others } =
-        person._doc;
-      followingList.push(others);
-    });
-    res.status(200).json(followingList);
+    const { userId } = res.locals.decodedToken
+    const following = await userModel.findById(userId).populate('Following');
+    res.status(200).json(following);
   } catch (error) {
     return res.status(500).json("Internal server error");
   }
-};
+}
 
 /// Get a followers list of users
-export const getFollowers: RequestHandler = async (req, res) => {
+export const getFollowers: RequestHandler = async (req, res ) => {
   try {
-    const user:any = await blogModel.findById(req.params.id);
-    const followersuser: any = await Promise.all(
-      user.Followers.map((item:any) => {
-        return userModel.findById(item);
-      })
-    );
-    const followersList: any = [];
-    followersuser.map((person:any) => {
-      const { email, password, phonenumber, Following, Followers, ...others } =
-        person._doc;
-      followersList.push(others);
-    });
 
-    res.status(200).json(followersList);
+    const { userId } = res.locals.decodedToken
+    const following = await userModel.findById(userId).populate('Following');
+    res.status(200).json(following);
   } catch (error) {
     return res.status(500).json("Internal server error");
   }

@@ -18,7 +18,7 @@ router.get("/get/post/:id",postController.uploadBlog );
 router.put("/update/post/:id" , Auth , postController.updateBlog);
 router.delete("/delete/post/:id" , Auth, postController.deleteBlog);
 
-router.get("/following/:id" , postController.getFollowing);
+router.post("/following" , Auth, postController.getFollowing);
 router.get("/followers/:id" , postController.getFollowers);
 
 export default router;  

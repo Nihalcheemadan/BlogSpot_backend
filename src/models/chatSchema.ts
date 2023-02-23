@@ -8,7 +8,7 @@ export interface IChat extends Document {
 
 const chatSchema = new Schema(
   {
-    sender: { type: Types.ObjectId, required: true },
+    sender: { type: Types.ObjectId, ref: "User", required: true },
     receiver: { type: Types.ObjectId, ref: "User", required: true },
     message: { type: String, required: true },
   },
