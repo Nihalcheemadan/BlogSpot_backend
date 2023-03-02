@@ -11,11 +11,11 @@ const blogSchema = new Schema(
       required: true,
     },
     category: {
-      type: String,
+      type: String, 
       required: true,
     },
     imageUrl:{
-      type:String,
+      type:String, 
       required:true
     },
     author:{
@@ -23,12 +23,22 @@ const blogSchema = new Schema(
       ref:'User',
       required:true
     },
+    status:{
+      type:String, 
+      default:'published'
+    },
     like: {
       type: [String],
     },
     saved: {
       type: [String],
     },
+    reported:[
+      {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+      }
+    ],
     comments: [
       {
         user: {

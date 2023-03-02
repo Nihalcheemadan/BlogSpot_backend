@@ -28,12 +28,14 @@ router.route('/update').put( Auth,userController.updateUser);
 router.route('/resetPassword').put(userController.verifyUser,userController.resetPassword);
 
 // delete requests //
-router.route('/:id').delete(userController.deleteUser);
 
 router.route("/following/:id").put( Auth ,userController.userFollowing  )
+router.get("/getFollowers" , userController.followUser)
+router.get("/categories",userController.getCategories)
+router.get("/userDetails", Auth, userController.userDetails)
 
-router.get("/flw/:id" , Auth , userController.followingPost);
-router.get("/post/user/details/:id" , userController.getUserDetailsforPost);
-router.get("/all/user/:id" , userController.followUser)
+// router.get("/flw/:id" , Auth , userController.followingPost);
+// router.get("/post/user/details/:id" , userController.getUserDetailsforPost);
+
 
 export default router;

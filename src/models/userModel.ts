@@ -42,6 +42,19 @@ const userSchema = new Schema(
       type: String,
       default: false,
     },
+    
+    reportedBlogs:[
+      {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Blog"
+      }
+    ],
+    savedBlogs:[
+      {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Blog"
+      }
+    ],
     Followers: [
       {
         type: mongoose.Schema.Types.ObjectId,

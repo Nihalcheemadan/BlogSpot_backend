@@ -35,7 +35,7 @@ export const adminLogin: RequestHandler = async (req, res, next) => {
 };
 
 export const userBlock: RequestHandler = async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   await userModel
     .findByIdAndUpdate(
       { _id: id },
@@ -51,7 +51,7 @@ export const userBlock: RequestHandler = async (req, res, next) => {
 };
 
 export const userUnblock: RequestHandler = async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.query.id;
   await userModel
     .findByIdAndUpdate(
       { _id: id },
@@ -65,6 +65,19 @@ export const userUnblock: RequestHandler = async (req, res, next) => {
       res.status(200).json({ msg: "user blocked successfully" });
     });
 };
+
+//dashboard
+
+export const dashboard: RequestHandler = async (req, res, next) => {
+  try {
+    const users = await userModel.find({}).count();
+    const blogs = await blogModel.find({}).count();
+    res.status(200).json({users,blogs,msg:"Dashboard updated"})
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 //get users list
 
@@ -154,7 +167,7 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 //get all the blogs
 export const getBlog: RequestHandler = async (req, res, next) => {
   try {
-    const blog = await blogModel.find({}).populate("author");
+    const blog = await blogModel.find({}).sort({ createdAt: -1 }).populate("author");
     console.log(blog);
     if (!blog)
       return next(createHttpError(501, "Blog data can't get right now"));

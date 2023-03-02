@@ -16,9 +16,13 @@ router.post('/getSingleBlog',Auth,postController.getSingleBlog);
 
 router.get("/get/post/:id",postController.uploadBlog );
 router.put("/update/post/:id" , Auth , postController.updateBlog);
-router.delete("/delete/post/:id" , Auth, postController.deleteBlog);
+router.delete("/deleteBlog" , Auth, postController.deleteBlog);
 
-router.post("/following" , Auth, postController.getFollowing);
+router.post("/following" , Auth, postController.getFollowing); 
 router.get("/followers/:id" , postController.getFollowers);
+
+router.route('/blockBlog').patch(postController.blockBlog);
+router.route('/unblockBlog').patch(postController.unblockBlog);
+router.route('/reportBlog').put( Auth, postController.reportBlog)
 
 export default router;  

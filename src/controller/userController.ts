@@ -1,13 +1,14 @@
 import {  NextFunction, Request, RequestHandler, Response } from "express";
 import createHttpError,{InternalServerError} from "http-errors";
 import mongoose, { InferSchemaType, Model } from "mongoose";
-import userModel from "../models/userModel";
+import userModel, { IUser } from "../models/userModel";
 import bcrypt from 'bcrypt'
 import jwt  from 'jsonwebtoken'
 import env from '../utils/validateEnv'
 import otpGenerator from 'otp-generator'
 import nodemailer from 'nodemailer'
 import blogModel from "../models/blogModel";
+import categoryModel from "../models/categoryModel";
 
 
 
@@ -314,12 +315,39 @@ export const userFollowing:RequestHandler = (async(req , res)=>{
         }else{
             await user.updateOne({$pull:{Following:id}});
             await otheruser.updateOne({$pull:{Followers:userId}});
-            return res.status(200).json("User has Unfollowed");
+            return res.status(201).json("User has Unfollowed");
         }
     }else{
         return res.status(400).json("You can't follow yourself")
     }
 })
+
+//userDetails
+
+export const userDetails: RequestHandler = async (req, res, next) => {
+    console.log(req.query.id, 'params modified');
+    const id = req.query.id;
+    if (!id) next(createHttpError(404, 'User not found'));
+    
+    try {
+      const user:any = await userModel
+        .findById(id)
+        .populate({ path: 'Followers', select: 'username' })
+        .populate({ path: 'Following', select: 'username' })
+        .populate({path: 'savedBlogs'})
+        .exec();
+    const followersCount = user.Followers.length;
+    const followingCount = user.Following.length;
+    const article = user.savedBlogs;
+    
+    const blog = await blogModel.find({author:id})
+        res.status(200).json({ blog , article , user, followersCount, followingCount });
+    } catch (error) { 
+        console.error(error);
+        next(createHttpError(500, 'Internal server error'));
+    }
+  };
+
 
 //Fetch post from following
 export const followingPost:RequestHandler = (async(req ,res)=>{
@@ -356,28 +384,22 @@ export const getUserDetailsforPost:RequestHandler = (async(req , res)=>{
 
 //get user to follow
 
-export const followUser:RequestHandler = (async(req , res)=>{
+export const followUser:RequestHandler = (async(req , res , next)=>{
     try {
-        const allUser:any = await userModel.find();
-        const user:any = await userModel.findById(req.params.id);
-        const followinguser = await Promise.all(
-            user.Following.map((item:any)=>{
-                return item;
-            })
-        )
-        const UserToFollow = allUser.filter((val:any)=>{
-            return !followinguser.find((item)=>{
-                return val._id.toString()===item;
-            })
-        })
-        const filteruser = await Promise.all(      
-            UserToFollow.map((item:any)=>{
-                const {email , phonenumber , Followers , Following , password , ...others } = item._doc;
-                return others;
-            })
-        )
-        res.status(200).json(filteruser)
+        const { id } = req.query;
+        res.status(200).json()
     } catch (error) {
-        return res.status(500).json("Internal server error")
+        next(InternalServerError)
+    }
+})
+
+//getCategories
+export const getCategories:RequestHandler = (async(req , res , next)=>{
+    try {
+        const categories = await categoryModel.find({})
+        if(!categories) return next(createHttpError(501,"categories not found"));
+        res.status(200).json(categories)
+    } catch (error) {
+        next(InternalServerError)
     }
 })

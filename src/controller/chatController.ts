@@ -6,7 +6,6 @@ export const getMessage: RequestHandler = async (req, res, next) => {
     try {
         const {userId} = res.locals.decodedToken;
         const to = req.query.to;
-        console.log(userId,to,'logged here');
         
         const messages = await chatModel.find({
             $or: [
@@ -16,7 +15,7 @@ export const getMessage: RequestHandler = async (req, res, next) => {
         }) 
         const allMessages = messages.map((msg) => {
             return {
-                id:msg._id,
+                id:msg._id, 
                 myself: msg.sender.toString() === userId,
                 message: msg.message
             }

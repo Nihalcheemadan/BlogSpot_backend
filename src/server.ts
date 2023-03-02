@@ -44,26 +44,28 @@ app.use((error:unknown,req:Request,res:Response,next:NextFunction)=>{
 
 const io = new SocketIOServer(server, {
     cors: {
-        origin:'http://localhost:3000/',
+        origin:'*',
         credentials: true
     } 
 });
 
 const onlineUsers = new Map();
-io.on("connection", (socket) => { 
+io.on("connection", (socket) => {     
     console.log('Client connected:', socket.id);
-    // const chatSocket = socket;
     socket.on("addUser", (id) => {
         onlineUsers.set(id, socket.id);
     })
     socket.on("send-msg", (data) => {
+        console.log('Received message:', data.messages);
+
         const sendUserSocket = onlineUsers.get(data.to)
         if (sendUserSocket) {
             socket.to(sendUserSocket).emit("msg-receive", data.message)
+            console.log('Sent message to user', data.to);
         }
     })
     // Handle disconnections
-    socket.on('disconnect', () => {
+    socket.on('disconnect', () => { 
         console.log('Client disconnected:', socket.id);
     });
 })
@@ -77,4 +79,4 @@ mongoose.connect(env.MONGO_CONNECTION).then(()=>{
     }) 
 }).catch(console.error)
 
-export default app; 
+export default app;
