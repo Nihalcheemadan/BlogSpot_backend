@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
         }
     })
     // Handle disconnections
-    socket.on('disconnect', () => { 
+    socket.on('disconnect', () => {    
         console.log('Client disconnected:', socket.id);
     });
 })

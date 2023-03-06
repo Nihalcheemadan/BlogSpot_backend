@@ -10,8 +10,8 @@
     "build":"tsc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "", 
+  "license": "ISC", 
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",

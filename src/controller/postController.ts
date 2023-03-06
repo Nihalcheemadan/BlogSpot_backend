@@ -63,12 +63,12 @@ export const reportBlog: RequestHandler = async (req, res, next) => {
   const { userId } = res.locals.decodedToken;
   const { id } = req.body;
   try {
-    const blog:any = await blogModel.findById(id);
+    const blog:any = await blogModel.findById(id).populate("reported");
+    console.log(blog,'blog gotchhaaaaaaaaaaa');
     if(blog.reported.includes(userId)){
       return next(createHttpError(404,'blog reported already'))
-    }else{  
-      blog.reported.push(userId); // Add userId to the reported array
-      await blog.save(); // Save the updated blog document
+    } 
+    await blog.updateOne( {$set:{status:"reported"}},{$push:{reported:userId}})
       await userModel.findByIdAndUpdate(
         { _id: userId },
         {
@@ -78,10 +78,10 @@ export const reportBlog: RequestHandler = async (req, res, next) => {
         }
       );
       res.status(200).json({msg:"the blog reported successfully"})
-    }
   } catch (error) {
     next(InternalServerError);
   }
+  
 };
 
 //upload post by one user
@@ -221,7 +221,7 @@ export const getComments: RequestHandler = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .populate("comments")
       .populate("comments.user")
-      .sort({ createdAt: -1 })
+      
     console.log(comments);
     if (!comments)
       return next(createHttpError(501, "comments can't get right now"));
