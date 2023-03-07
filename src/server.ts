@@ -46,7 +46,7 @@ const io = new SocketIOServer(server, {
     cors: {
         origin:'*',
         credentials: true
-    } 
+    }
 });
 
 const onlineUsers = new Map();
