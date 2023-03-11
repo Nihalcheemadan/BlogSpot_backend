@@ -5,6 +5,8 @@ import chatModel from "../models/chatSchema";
 export const getMessage: RequestHandler = async (req, res, next) => {
     try {
         const {userId} = res.locals.decodedToken;
+        console.log(req.query,'kjkkj');
+        
         const to = req.query.to;
         
         const messages = await chatModel.find({
@@ -17,7 +19,8 @@ export const getMessage: RequestHandler = async (req, res, next) => {
             return {
                 id:msg._id, 
                 myself: msg.sender.toString() === userId,
-                message: msg.message
+                message: msg.message,
+                type: msg.type 
             }
         })
         res.status(200).json(allMessages)
@@ -30,12 +33,13 @@ export const sendMessage: RequestHandler = async (req, res, next) => {
     try {
         const { userId } = res.locals.decodedToken;
         if (!userId) return next(createHttpError(401, "unauthorized user!"))
-        const { messages, to } = req.body
+        const { message, to ,type } = req.body
         
         const newMessage = new chatModel({
             sender: userId,
             receiver: to,
-            message:messages
+            message:message,
+            type:type
         })
         newMessage.save()
         res.status(201).json(newMessage)

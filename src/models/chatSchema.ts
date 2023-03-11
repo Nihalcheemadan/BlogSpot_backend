@@ -4,6 +4,7 @@ export interface IChat extends Document {
   sender: Types.ObjectId;
   receiver: Types.ObjectId;
   message: string;
+  type: string; 
 }
 
 const chatSchema = new Schema(
@@ -11,8 +12,9 @@ const chatSchema = new Schema(
     sender: { type: Types.ObjectId, ref: "User", required: true },
     receiver: { type: Types.ObjectId, ref: "User", required: true },
     message: { type: String, required: true },
+    type:{type:String,required:true}
   },
   { timestamps: true }
-);
+);   
 
 export default model<IChat>("Chat", chatSchema);

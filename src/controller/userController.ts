@@ -57,12 +57,11 @@ export const createMail : RequestHandler<unknown,unknown,createMailData,unknown>
 
 export const verifyUser : RequestHandler = async (req,res,next) => {
     try {
-        const { username } = req.method == "GET" ? req.query : req.body;
-        const exist = await userModel.findOne({username}).exec();
-        if(!exist) return next(createHttpError(404,"Cannot find user"))
-        next();
+        const { userId }  = res.locals.decodedToken ;
+        const user = await userModel.findById(userId)
+        res.status(200).json(user);
     } catch (error) {
-        next(InternalServerError)
+        next(InternalServerError) 
     }
 }
 

@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 import env from './utils/validateEnv'
 
 
-const app = express();
+const app = express(); 
 const server = http.createServer(app);
 
 app.use(express.json({limit: "50mb"}));
@@ -51,25 +51,22 @@ const io = new SocketIOServer(server, {
 
 const onlineUsers = new Map();
 io.on("connection", (socket) => {     
-    console.log('Client connected:', socket.id);
     socket.on("addUser", (id) => {
-        onlineUsers.set(id, socket.id);
+        onlineUsers.set(id, socket.id)
     })
     socket.on("send-msg", (data) => {
-        console.log('Received message:', data.messages);
-
+        console.log(data,'dataaaaaaaaaaaaaa')
         const sendUserSocket = onlineUsers.get(data.to)
         if (sendUserSocket) {
-            socket.to(sendUserSocket).emit("msg-receive", data.message)
-            console.log('Sent message to user', data.to);
+            socket.to(sendUserSocket).emit("msg-receive", data)
         }
-    })
+    }) 
     // Handle disconnections
     socket.on('disconnect', () => {    
         console.log('Client disconnected:', socket.id);
     });
-})
-
+})  
+ 
 const port = env.PORT
 
 mongoose.connect(env.MONGO_CONNECTION).then(()=>{

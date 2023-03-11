@@ -8,11 +8,11 @@ const router = express.Router();
 
 //  post requests //
 router.route('/signup').post(userController.userSignup);
-router.route('/login').post(userController.verifyUser, userController.userLogin);
-router.route('/authenticate').post(userController.verifyUser,(req,res) => res.end()); //authenticate user
+router.route('/login').post( userController.userLogin);
+router.route('/authenticate').get(Auth ,userController.verifyUser); //authenticate user
 router.route('/createMail').post(userController.createMail);
 
-router.route('/sendMessage').post(Auth, chatController.sendMessage);
+router.route('/sendMessage').post(Auth, chatController.sendMessage); 
 
 // get requests //
 router.route('/generateOtp').get( localVariables , userController.generateOtp);
