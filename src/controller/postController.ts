@@ -101,16 +101,17 @@ export const uploadBlog: RequestHandler = async (req, res) => {
 export const updateBlog: RequestHandler = async (req, res) => {
   try {
     const { userId } = res.locals.decodedToken;
-
-    let post: any = await blogModel.findById(req.params.id);
+    console.log(req.body,'body contentr ');
+    
+    let post: any = await blogModel.findById(req.body.id);
     if (!post) {
       return res.status(400).json("Post does not found");
     }
-    post = await blogModel.findByIdAndUpdate(req.params.id, {
+    post = await blogModel.findByIdAndUpdate(req.body.id, {
       $set: req.body,
     });
     const updatepost = await post.save();
-    res.status(200).json(updatepost);
+    res.status(200).json({msg:"blog updated successfully"});
   } catch (error) {
     return res.status(500).json("Internal error occured");
   }
@@ -270,7 +271,8 @@ export const deleteBlog: RequestHandler = async (req, res) => {
 export const getFollowing: RequestHandler = async (req, res) => {
   try {
     const { userId } = res.locals.decodedToken;
-    const following = await userModel.findById(userId).populate("Following");
+    // const following = await userModel.findById(userId).populate("Following");
+    const following = await userModel.find({})
     res.status(200).json(following);
   } catch (error) {
     return res.status(500).json("Internal server error");
@@ -279,7 +281,7 @@ export const getFollowing: RequestHandler = async (req, res) => {
 
 /// Get a followers list of users
 export const getFollowers: RequestHandler = async (req, res) => {
-  try {
+  try { 
     const { userId } = res.locals.decodedToken;
     const following = await userModel.findById(userId).populate("Following");
     res.status(200).json(following);

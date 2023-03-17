@@ -10,29 +10,39 @@ import env from "../utils/validateEnv";
 //admin login
 
 export const adminLogin: RequestHandler = async (req, res, next) => {
-  const username = req.body.username;
-  const passwordRaw = req.body.password;
+  const { username, password } = req.body;
   try {
-    const admin = await userModel.findOne({
-      username: username,
-      isAdmin: true,
+    const admin:any = await userModel.findOne({
+      username:username,
+      isAdmin:true
     });
     if (!admin) return next(createHttpError(404, "Enter valid username"));
-    const passwordValidate = await bcrypt.compare(passwordRaw, admin.password);
-    if (!passwordValidate)
-      return next(createHttpError(404, "Password does not match"));
+    const passwordValidate = await bcrypt.compare(password, admin.password);
+    if (!passwordValidate) return next(createHttpError(404, "Password does not match"));
     const token = jwt.sign(
-      {
-        adminId: admin._id,
-      },
+      { adminId: admin._id },
       env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
+      (error, token) => {
+        if (error) return next(createHttpError(500, "Failed to generate token"));
+        res.status(201).send({ token, msg: "Login successful" });
+      }
     );
-    return res.status(201).send({ token, msg: "Login successfull.." });
   } catch (error) {
     next(InternalServerError);
   }
 };
+
+export const verifyAdmin : RequestHandler = async (req,res,next) => {
+  try {
+      const { adminId }  = res.locals.decodedToken ;
+      const admin = await userModel.findById(adminId)
+      res.status(200).json(admin);
+  } catch (error) {
+      next(InternalServerError) 
+  }
+}
+
 
 export const userBlock: RequestHandler = async (req, res, next) => {
   const id = req.query.id;
@@ -118,19 +128,18 @@ export const createCategory: RequestHandler = async (req, res, next) => {
 export const getCategory: RequestHandler = async (req, res, next) => {
   try {
     const category = await categoryModel.find({});
-    if (!category)
-      return next(createHttpError(501, "Blog data can't get right now"));
+    if (!category) return next(createHttpError(501, "Blog data can't get right now"));
     res.status(201).json(category);
   } catch (error) {
     next(InternalServerError);
   }
 };
 
-//editCategory
+//editCategory 
 
 export const editCategory: RequestHandler = async (req, res, next) => {
   const { id, category, imageUrl } = req.body;
-  console.log(req.body);
+  console.log(req.body); 
 
   try {
     const updatedCategory = await categoryModel.findByIdAndUpdate(
@@ -167,15 +176,16 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 //get all the blogs
 export const getBlog: RequestHandler = async (req, res, next) => {
   try {
+
     const blog = await blogModel.find({}).sort({ createdAt: -1 }).populate("author");
-    console.log(blog);
-    if (!blog)
-      return next(createHttpError(501, "Blog data can't get right now"));
+    if (!blog) return next(createHttpError(501, "Blog data can't get right now"));
+
     res.status(201).json({ blog });
   } catch (error) {
     next(InternalServerError);
   }
-};
+}
+
 
 //create a new blog
 

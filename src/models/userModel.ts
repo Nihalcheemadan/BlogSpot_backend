@@ -4,9 +4,14 @@ interface IUser extends Document {
   username: string;
   email: string;
   password: string;
-  profileImg: string,
+  profileImg: string;
+  country: string;
+  address: string;
+  about: string;
+  gallery: string[];
   status: string;
   isAdmin: boolean;
+  isPremiumUser: boolean;
   Followers: string[];
   Following: string[];
   createdAt: Date;
@@ -18,19 +23,31 @@ const userSchema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true, 
-    },  
-    email: { 
+      unique: true,
+    },
+    email: {
       type: String,
       required: true,
       unique: true,
     },
+    country: {
+      type: String,
+      default: "",
+    },
+    address: {
+      type: String,
+      default: "",
+    },
+    about: {
+      type: String,
+      default: "A new user",
+    },
     password: {
       type: String,
       required: true,
-    }, 
+    },
     profileImg: {
-      type: String, 
+      type: String,
       default:
         "https://img.freepik.com/premium-vector/men-icon-trendy-avatar-character-cheerful-happy-people-flat-vector-illustration-round-frame-male-portraits-group-team-adorable-guys-isolated-white-background_275421-286.jpg?w=740",
     },
@@ -39,33 +56,39 @@ const userSchema = new Schema(
       default: "unblocked",
     },
     isAdmin: {
-      type: String,
+      type: Boolean,
       default: false,
     },
-    
-    reportedBlogs:[
+    isPremiumUser:{
+      type: Boolean,
+      default: false,
+    },
+    gallery: {
+      type: [String],
+    },
+    reportedBlogs: [
       {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Blog"
-      }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
     ],
-    savedBlogs:[
+    savedBlogs: [
       {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Blog"
-      }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
     ],
     Followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      }
+      },
     ],
     Following: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      }
+      },
     ],
   },
   { timestamps: true }

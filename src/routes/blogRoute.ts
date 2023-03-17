@@ -15,7 +15,7 @@ router.put("/saveBlog" ,Auth , postController.saveBlog);
 router.post('/getSingleBlog',Auth,postController.getSingleBlog);
 
 router.get("/get/post/:id",postController.uploadBlog );
-router.put("/update/post/:id" , Auth , postController.updateBlog);
+router.post("/updateBlog" , Auth , postController.updateBlog);
 router.delete("/deleteBlog" , Auth, postController.deleteBlog);
 
 router.post("/following" , Auth, postController.getFollowing); 

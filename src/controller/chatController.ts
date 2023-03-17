@@ -20,7 +20,8 @@ export const getMessage: RequestHandler = async (req, res, next) => {
                 id:msg._id, 
                 myself: msg.sender.toString() === userId,
                 message: msg.message,
-                type: msg.type 
+                type: msg.type,
+                createdAt: msg.createdAt
             }
         })
         res.status(200).json(allMessages)
@@ -39,7 +40,8 @@ export const sendMessage: RequestHandler = async (req, res, next) => {
             sender: userId,
             receiver: to,
             message:message,
-            type:type
+            type:type,
+            
         })
         newMessage.save()
         res.status(201).json(newMessage)
@@ -48,3 +50,5 @@ export const sendMessage: RequestHandler = async (req, res, next) => {
         return next(InternalServerError)
     }
 }
+
+

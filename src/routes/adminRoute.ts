@@ -6,18 +6,19 @@ import { Auth } from '../middleware/auth'
 const router = express.Router();
 
 router.route('/login').post(adminController.adminLogin);
-router.route('/userBlock').get(adminController.userBlock);
-router.route('/userUnblock').get(adminController.userUnblock);
-router.get('/dashboard',adminController.dashboard);
+router.route('/authenticate').get(Auth ,adminController.verifyAdmin); //authenticate user
+router.route('/userBlock').get(Auth,adminController.userBlock);
+router.route('/userUnblock').get(Auth,adminController.userUnblock);
+router.get('/dashboard', Auth , adminController.dashboard);
 
-router.route('/createCategory').post(adminController.createCategory);
-router.route('/getCategory').get(adminController.getCategory);
-router.route('/editCategory').put(adminController.editCategory);
-router.route('/deleteCategory').delete(adminController.deleteCategory)
+router.route('/createCategory').post(Auth,adminController.createCategory);
+router.route('/getCategory').get(Auth,adminController.getCategory);
+router.route('/editCategory').put(Auth,adminController.editCategory);
+router.route('/deleteCategory').delete(Auth,adminController.deleteCategory)
 
-router.get('/getBlog',adminController.getBlog);
-router.route('/createBlog').post(adminController.createBlog);
-router.route('/getUsers').get(adminController.getUsers);
+router.get('/getBlog',Auth,adminController.getBlog);
+router.route('/createBlog').post(Auth,adminController.createBlog);
+router.route('/getUsers').get(Auth,adminController.getUsers);
 
 
 export default router;
