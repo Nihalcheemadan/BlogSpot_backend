@@ -11,21 +11,21 @@ const blogSchema = new Schema(
       required: true,
     },
     category: {
-      type: String, 
+      type: String,
       required: true,
     },
-    imageUrl:{
-      type:String, 
-      required:true
+    imageUrl: {
+      type: String,
+      required: true,
     },
-    author:{
-      type : mongoose.Schema.Types.ObjectId,
-      ref:'User',
-      required:true
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    status:{
-      type:String, 
-      default:'published'
+    status: {
+      type: String,
+      default: "published",
     },
     like: {
       type: [String],
@@ -33,17 +33,22 @@ const blogSchema = new Schema(
     saved: {
       type: [String],
     },
-    reported:[
+    reported: [
       {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        reason:{
+          type:String,
+        }
       }
     ],
     comments: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
-          ref:'User',
+          ref: "User",
           required: true,
         },
         username: {
@@ -56,8 +61,8 @@ const blogSchema = new Schema(
         },
         createdAt: {
           type: Date,
-          default: Date.now
-        }
+          default: Date.now,
+        },
       },
     ],
   },

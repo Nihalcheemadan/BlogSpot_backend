@@ -49,11 +49,12 @@ export const unblockBlog: RequestHandler = async (req, res, next) => {
       {
         $set: {
           status: "published",
+          reported: [],
         },
       }
     )
     .then(() => {
-      res.status(200).json({ msg: "user blocked successfully" });
+      res.status(200).json({ msg: "user unBlocked successfully" });
     });
 };
 
@@ -61,27 +62,34 @@ export const unblockBlog: RequestHandler = async (req, res, next) => {
 
 export const reportBlog: RequestHandler = async (req, res, next) => {
   const { userId } = res.locals.decodedToken;
-  const { id } = req.body;
+  const { id, reason } = req.body;
   try {
-    const blog:any = await blogModel.findById(id).populate("reported");
-    console.log(blog,'blog gotchhaaaaaaaaaaa');
-    if(blog.reported.includes(userId)){
-      return next(createHttpError(404,'blog reported already'))
-    } 
-    await blog.updateOne( {$set:{status:"reported"}},{$push:{reported:userId}})
-      await userModel.findByIdAndUpdate(
-        { _id: userId },
-        {
-          $push: {
-            reportedBlogs: id,
-          }, 
-        }
-      );
-      res.status(200).json({msg:"the blog reported successfully"})
+    const blog :any = await blogModel.findById(id).populate("reported.user");
+
+    if (blog.reported.some((report:any) => report.user._id.equals(userId))) {
+      return next(createHttpError(404, "Blog already reported"));
+    }
+
+    await blogModel.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: { status: "reported" },
+        $push: { reported: { user: userId, reason } },
+      },
+      { new: true }
+    );
+    await userModel.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          reportedBlogs: id,
+        },
+      }
+    );
+    res.status(200).json({ msg: "the blog reported successfully" });
   } catch (error) {
     next(InternalServerError);
   }
-  
 };
 
 //upload post by one user
@@ -101,8 +109,8 @@ export const uploadBlog: RequestHandler = async (req, res) => {
 export const updateBlog: RequestHandler = async (req, res) => {
   try {
     const { userId } = res.locals.decodedToken;
-    console.log(req.body,'body contentr ');
-    
+    console.log(req.body, "body contentr ");
+
     let post: any = await blogModel.findById(req.body.id);
     if (!post) {
       return res.status(400).json("Post does not found");
@@ -111,7 +119,7 @@ export const updateBlog: RequestHandler = async (req, res) => {
       $set: req.body,
     });
     const updatepost = await post.save();
-    res.status(200).json({msg:"blog updated successfully"});
+    res.status(200).json({ msg: "blog updated successfully" });
   } catch (error) {
     return res.status(500).json("Internal error occured");
   }
@@ -123,7 +131,6 @@ export const likeBlog: RequestHandler = async (req, res) => {
     const { id } = req.body;
     const { userId } = res.locals.decodedToken;
     const post: any = await blogModel.findById({ _id: id });
-    console.log(userId, id);
 
     if (!post.like.includes(userId)) {
       // if (post.dislike.includes(userId)) {
@@ -178,7 +185,6 @@ export const getSingleBlog: RequestHandler = async (req, res, next) => {
       .findById({ _id: req.body.blogId })
       .populate("like")
       .populate("saved");
-    console.log(blog);
     if (!blog)
       return next(createHttpError(501, "Blog data can't get right now"));
     let liked = false;
@@ -221,8 +227,8 @@ export const getComments: RequestHandler = async (req, res, next) => {
       .findById({ _id: id })
       .sort({ createdAt: -1 })
       .populate("comments")
-      .populate("comments.user")
-      
+      .populate("comments.user");
+
     console.log(comments);
     if (!comments)
       return next(createHttpError(501, "comments can't get right now"));
@@ -261,7 +267,7 @@ export const getUserComment: RequestHandler = async (req, res, next) => {
 export const deleteBlog: RequestHandler = async (req, res) => {
   try {
     await blogModel.findByIdAndDelete(req.query.id);
-    res.status(200).json({msg:"content deleted successfully"})
+    res.status(200).json({ msg: "content deleted successfully" });
   } catch (error) {
     return res.status(500).json("Internal server error");
   }
@@ -272,7 +278,7 @@ export const getFollowing: RequestHandler = async (req, res) => {
   try {
     const { userId } = res.locals.decodedToken;
     // const following = await userModel.findById(userId).populate("Following");
-    const following = await userModel.find({})
+    const following = await userModel.find({});
     res.status(200).json(following);
   } catch (error) {
     return res.status(500).json("Internal server error");
@@ -281,7 +287,7 @@ export const getFollowing: RequestHandler = async (req, res) => {
 
 /// Get a followers list of users
 export const getFollowers: RequestHandler = async (req, res) => {
-  try { 
+  try {
     const { userId } = res.locals.decodedToken;
     const following = await userModel.findById(userId).populate("Following");
     res.status(200).json(following);

@@ -23,6 +23,6 @@ router.get("/followers/:id" , postController.getFollowers);
 
 router.route('/blockBlog').patch(postController.blockBlog);
 router.route('/unblockBlog').patch(postController.unblockBlog);
-router.route('/reportBlog').put( Auth, postController.reportBlog)
+router.route('/reportBlog').post( Auth, postController.reportBlog)
 
 export default router;  

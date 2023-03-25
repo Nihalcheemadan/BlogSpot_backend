@@ -17,6 +17,7 @@ router.route('/editCategory').put(Auth,adminController.editCategory);
 router.route('/deleteCategory').delete(Auth,adminController.deleteCategory)
 
 router.get('/getBlog',Auth,adminController.getBlog);
+router.post('/reportManagement',Auth,adminController.reportManagement)
 router.route('/createBlog').post(Auth,adminController.createBlog);
 router.route('/getUsers').get(Auth,adminController.getUsers);
 

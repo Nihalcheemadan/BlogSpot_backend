@@ -177,10 +177,30 @@ export const deleteCategory: RequestHandler = async (req, res, next) => {
 export const getBlog: RequestHandler = async (req, res, next) => {
   try {
 
-    const blog = await blogModel.find({}).sort({ createdAt: -1 }).populate("author");
+    const blog = await blogModel.find({}).sort({ createdAt: -1 }).populate("author").populate('reported')
+    // const reportedUsers = await blogModel.find().populate('reported.user')
+    // const reportedUsers = await blogModel.find({})
     if (!blog) return next(createHttpError(501, "Blog data can't get right now"));
-
+    // console.log(reportedUsers,'blog users')
+    console.log(blog,'blog other than reported')
+    // const reportedUsers :any = blog.reported
     res.status(201).json({ blog });
+  } catch (error) {
+    next(InternalServerError);
+  }
+}
+
+//reportManagement
+
+export const reportManagement: RequestHandler = async (req, res, next) => {
+
+  console.log(req.body.id,'reqj boduuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu');
+  
+  try {
+    const reportedUsers = await blogModel.findById(req.body.id).populate('reported').populate('reported.user')
+    if (!reportedUsers) return next(createHttpError(501, "Blog data can't get right now"));
+    console.log(reportedUsers,'blog other than reported')
+    res.status(201).json({ reportedUsers });
   } catch (error) {
     next(InternalServerError);
   }
